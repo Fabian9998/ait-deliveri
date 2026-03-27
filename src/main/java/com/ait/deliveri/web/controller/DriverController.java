@@ -39,7 +39,7 @@ public class DriverController {
 		return service.create(request);
 	}
 	
-	@PatchMapping("{id}_/status")
+	@PatchMapping("{id}/status")
 	public ResponseEntity<?> status(@PathVariable UUID id){
 		return service.status(id);
 	}

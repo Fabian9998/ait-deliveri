@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.ait.deliveri.db.entity.Order;
 
-public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecificationExecutor<Order> {
+public interface IOrderRepository extends JpaRepository<Order, UUID>, JpaSpecificationExecutor<Order> {
 
 }

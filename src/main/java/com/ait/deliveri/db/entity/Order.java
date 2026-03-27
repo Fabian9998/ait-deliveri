@@ -36,11 +36,11 @@ public class Order {
 	private UUID id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "status_id", nullable = false)
+	@JoinColumn(name = "status", nullable = false)
 	private OrderStatus status;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "driver_id")
+	@JoinColumn(name = "driver")
 	private Driver driver;
 
 	@Column(nullable = false)

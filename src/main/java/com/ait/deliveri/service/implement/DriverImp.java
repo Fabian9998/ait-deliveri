@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ait.deliveri.db.dto.DriverRequest;
 import com.ait.deliveri.db.dto.DriverResponse;
@@ -28,6 +29,7 @@ public class DriverImp implements IDriverService {
 	private final DriverRepository repository;
 	
 	@Override
+	@Transactional(readOnly = true)
 	public ResponseEntity<?> get(Map<String, String> params, Pageable pageable) {
 		try {
             pageable = "*".equals(params.get("size")) ? PageRequest.of(0, Integer.MAX_VALUE, pageable.getSort())
@@ -56,6 +58,7 @@ public class DriverImp implements IDriverService {
 	}
 
 	@Override
+	@Transactional
 	public ResponseEntity<?> create(DriverRequest request) {
 		try {
 			Boolean license = repository.existsByLicenseNumber(request.getLicenseNumber());
@@ -81,6 +84,7 @@ public class DriverImp implements IDriverService {
 	}
 
 	@Override
+	@Transactional
 	public ResponseEntity<?> status(UUID id) {
 		try {
 			Optional<Driver> opt = repository.findById(id);

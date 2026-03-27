@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.ait.deliveri.db.entity.Driver;
 
-public interface DriverRepository extends JpaRepository<Driver, UUID>, JpaSpecificationExecutor<Driver> {
+public interface IDriverRepository extends JpaRepository<Driver, UUID>, JpaSpecificationExecutor<Driver> {
 
+	Boolean existsByLicenseNumber(String licenseNumber);
 }

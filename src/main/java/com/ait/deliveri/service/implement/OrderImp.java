@@ -132,6 +132,11 @@ public class OrderImp implements IOrderService {
                         .body(Map.of("codigo", 404, "mensaje", "No se encontro el conductor"));
 			}
 			
+			if(!optDrivert.get().getActive()) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("codigo", 404, "mensaje", "No se puede asignar un conductor inhabilitado"));
+			}
+			
 			String pdfPath = FileUtils.saveBase64File(entity.getId().toString(), "file" + entity.getId(), request.getPdf());
 			String imagePath = FileUtils.saveBase64File(entity.getId().toString(), "img" + entity.getId(), request.getImage());
 			

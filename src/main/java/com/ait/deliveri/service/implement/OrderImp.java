@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ait.deliveri.db.dto.AssignDriverRequest;
 import com.ait.deliveri.db.dto.OrderRequest;
 import com.ait.deliveri.db.dto.OrderResponse;
 import com.ait.deliveri.db.entity.Driver;
@@ -23,6 +24,7 @@ import com.ait.deliveri.db.repository.imp.DriverRepository;
 import com.ait.deliveri.db.repository.imp.OrderRepository;
 import com.ait.deliveri.db.repository.imp.OrderStatusRepository;
 import com.ait.deliveri.service.IOrderService;
+import com.ait.deliveri.utils.FileUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -110,7 +112,7 @@ public class OrderImp implements IOrderService {
 	
 	@Override
 	@Transactional
-	public ResponseEntity<?> asignDriver(UUID id, UUID driverId) {
+	public ResponseEntity<?> assignDriver(UUID id, UUID driverId, AssignDriverRequest request) {
 		try {
 			Optional<Order> opt = repository.findById(id);
 			if(opt.isEmpty()) {
@@ -130,7 +132,12 @@ public class OrderImp implements IOrderService {
                         .body(Map.of("codigo", 404, "mensaje", "No se encontro el conductor"));
 			}
 			
+			String pdfPath = FileUtils.saveBase64File(entity.getId().toString(), "file" + entity.getId(), request.getPdf());
+			String imagePath = FileUtils.saveBase64File(entity.getId().toString(), "img" + entity.getId(), request.getImage());
+			
 			entity.setDriver(optDrivert.get());
+			entity.setPdf(pdfPath);
+			entity.setImage(imagePath);
 			entity = repository.save(entity);
 			
 			OrderResponse response = this.mapToResponse(entity);

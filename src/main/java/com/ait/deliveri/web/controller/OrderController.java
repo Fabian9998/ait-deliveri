@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ait.deliveri.db.dto.AssignDriverRequest;
 import com.ait.deliveri.db.dto.OrderRequest;
 import com.ait.deliveri.service.IOrderService;
 
@@ -45,8 +46,8 @@ public class OrderController {
 	}
 	
 	@PatchMapping("{id}/driver/{id}")
-	public ResponseEntity<?> asignDriver(@PathVariable UUID id, @PathVariable UUID driverId){
-		return service.asignDriver(id, driverId);
+	public ResponseEntity<?> assignDriver(@PathVariable UUID id, @PathVariable UUID driverId, @Valid AssignDriverRequest request){
+		return service.assignDriver(id, driverId, request);
 	}
 	
 	@PatchMapping("{id}/status/{status}")

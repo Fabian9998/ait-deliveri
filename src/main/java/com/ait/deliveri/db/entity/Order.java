@@ -48,6 +48,12 @@ public class Order {
 
 	@Column(nullable = false)
 	private String destination;
+	
+	@Column(nullable = true)
+	private String pdf;
+	
+	@Column(nullable = true)
+	private String image;
 
 	@CreationTimestamp
 	@Column(name = "created_at", nullable = false, updatable = false)

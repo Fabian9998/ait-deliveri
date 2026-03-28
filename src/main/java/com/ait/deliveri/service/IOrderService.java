@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
+import com.ait.deliveri.db.dto.AssignDriverRequest;
 import com.ait.deliveri.db.dto.OrderRequest;
 
 public interface IOrderService {
@@ -16,7 +17,7 @@ public interface IOrderService {
 
 	public ResponseEntity<?> create(OrderRequest request);
 	
-	public ResponseEntity<?> asignDriver(UUID id, UUID driverId);
+	public ResponseEntity<?> assignDriver(UUID id, UUID driverId, AssignDriverRequest request);
 	
 	public ResponseEntity<?> status(UUID id, String status);
 	

@@ -115,10 +115,37 @@ POST /auth/login?username=admin&password=1234
 > | `username` | String | 'admin' |
 > | `password` | String | '1234'  |
 
-### 2. Usar el token en cada petición
+### 2.- Usar el token en cada petición
 
 Agrega el siguiente header en todas las solicitudes:
 ```
 Authorization: Bearer <tu-token>
 ```
 ---
+
+## Levantar el proyecto desde un IDE
+- IDE recomendado: IntelliJ IDEA / Eclipse / VS Code
+
+### 2.- Configurar variables en `application.properties`
+
+Abre el archivo `src/main/resources/application.properties` y ajusta los siguientes valores:
+```properties
+server.port=8090
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/logistica_db
+spring.datasource.username=usuarioDB
+spring.datasource.password=contraseñaDB
+
+app.storage.path=/app
+```
+
+### 3.- Levantar el proyecto :
+Spring boot app.
+
+## Acceder a las pruebas unitarias:
+
+### 1.- Acceder a la clase:
+Abrir la clase `src/test/DriverImpTesting.java`
+
+### 2.- Ejecutar pruebas.
+Ejecutar JUnit Test

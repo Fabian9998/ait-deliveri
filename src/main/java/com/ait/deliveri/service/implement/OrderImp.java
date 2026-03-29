@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ait.deliveri.db.dto.AssignDriverRequest;
+import com.ait.deliveri.db.dto.DriverResponse;
 import com.ait.deliveri.db.dto.OrderRequest;
 import com.ait.deliveri.db.dto.OrderResponse;
 import com.ait.deliveri.db.entity.Driver;
@@ -39,6 +41,9 @@ public class OrderImp implements IOrderService {
 	private final OrderRepository repository;
 	private final OrderStatusRepository statusRepository;
 	private final DriverRepository driverRepository;
+	
+	@Value("${app.storage.path}")
+	private String storagePath;
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -77,6 +82,33 @@ public class OrderImp implements IOrderService {
 		OrderResponse response = this.mapToResponse(opt.get());
 		return ResponseEntity.ok(Map.of("codigo", 200, "mensaje", "Ok", "data", response));
 
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public ResponseEntity<?> getFilesorderById(UUID id) {
+		log.info("Buscar orden por id: {}", id);
+		Optional<Order> opt = repository.findById(id);
+		if (opt.isEmpty()) {
+			log.warn("No se encontro la orden");
+			throw new NotFoundException("No encontrado");
+		}
+		
+		Order entity = opt.get();
+
+		if(entity.getPdf() == null || entity.getImage() == null) {
+			log.warn("Orden sin documentos");
+			throw new NotFoundException("Orden sin documentos");
+		}
+		
+		log.info("Orden con documentos");
+		String pdf = FileUtils.getBase64File(entity.getPdf());
+		String image = FileUtils.getBase64File(entity.getImage());
+		AssignDriverRequest response = AssignDriverRequest.builder()
+				.pdf(pdf)
+				.image(image)
+				.build();
+		return ResponseEntity.ok(Map.of("codigo", 200, "mensaje", "Ok", "data", response));
 	}
 
 	@Override
@@ -129,8 +161,8 @@ public class OrderImp implements IOrderService {
 			throw new BadRequestException("No se puede asignar un conductor inhabilitado");
 		}
 
-		String pdfPath = FileUtils.saveBase64File(entity.getId().toString(), "file" + entity.getId(), request.getPdf());
-		String imagePath = FileUtils.saveBase64File(entity.getId().toString(), "img" + entity.getId(),
+		String pdfPath = FileUtils.saveBase64File(storagePath + "/" + entity.getId().toString(), "file" + entity.getId(), request.getPdf());
+		String imagePath = FileUtils.saveBase64File(storagePath + "/" + entity.getId().toString(), "img" + entity.getId(),
 				request.getImage());
 
 		log.info("Se guardo con exito los archivos");
@@ -165,10 +197,10 @@ public class OrderImp implements IOrderService {
 			throw new BadRequestException("No se puede cambiar el estatus a creada a una orden en proceso de entrega");
 		}
 
-		if (entity.getStatus().getCode().equals("CREATED") && status.equals("IN_TRANSIT")
+		if (entity.getStatus().getCode().equals("CREATED") && (status.equals("IN_TRANSIT") || (status.equals("DELIVERED")))
 				&& entity.getDriver() == null) {
-			log.warn("Debe asignar un conductor a la orden para poner la orden en proceso de entrega");
-			throw new BadRequestException("Debe asignar un condutor para poner la orden en proceso de entrega");
+			log.warn("Debe asignar un conductor a la orden para poner la orden en proceso de entrega o entregado");
+			throw new BadRequestException("Debe asignar un condutor para poner la orden en proceso de entrega o entregado");
 		}
 
 		Optional<OrderStatus> optStatus = statusRepository.findByCode(status);
@@ -186,10 +218,19 @@ public class OrderImp implements IOrderService {
 	}
 	
 	private OrderResponse mapToResponse(Order entity) {
+		DriverResponse driver = null;
+		if(entity.getDriver() != null) {
+			driver = DriverResponse.builder()
+					.id(entity.getDriver().getId())
+					.name(entity.getDriver().getName())
+					.licenseNumber(entity.getDriver().getLicenseNumber())
+					.active(entity.getDriver().getActive())
+					.build();
+		}
 		return OrderResponse.builder()
 				.id(entity.getId())
-				.status(entity.getStatus())
-				.driver(entity.getDriver())
+				.status(entity.getStatus().getCode())
+				.driver(driver)
 				.origin(entity.getOrigin())
 				.destination(entity.getDestination())
 				.createdAt(entity.getCreatedAt())

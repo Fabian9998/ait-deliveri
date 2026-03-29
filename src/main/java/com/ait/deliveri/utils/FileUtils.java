@@ -2,6 +2,7 @@ package com.ait.deliveri.utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.file.Files;
 import java.util.Base64;
 
 public final class FileUtils {
@@ -38,18 +39,34 @@ public final class FileUtils {
 	        throw new RuntimeException("Archivo vacio");
 	    }
 
-	    if (base64.contains("application/pdf")) {
+	    if (base64.contains("JVBER")) {
 	        return "pdf";
 	    }
 
-	    if (base64.contains("image/jpeg") || base64.contains("image/jpg")) {
+	    if (base64.contains("/9j/")) {
 	        return "jpg";
 	    }
 
-	    if (base64.contains("image/png")) {
+	    if (base64.contains("iVBOR")) {
 	        return "png";
 	    }
 
 	    throw new RuntimeException("Formato no soportado");
+	}
+	
+	public static String getBase64File(String fullPath) {
+	    try {
+	        File file = new File(fullPath);
+
+	        if (!file.exists()) {
+	            throw new RuntimeException("Archivo no encontrado: " + fullPath);
+	        }
+
+	        byte[] bytes = Files.readAllBytes(file.toPath());
+	        return Base64.getEncoder().encodeToString(bytes);
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error al leer archivo", e);
+	    }
 	}
 }

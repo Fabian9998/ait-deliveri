@@ -14,6 +14,8 @@ public interface IOrderService {
 	public ResponseEntity<?> get(Map<String, String> params,Pageable pageable);
 
 	public ResponseEntity<?> getById(UUID id);
+	
+	public ResponseEntity<?> getFilesorderById(UUID id);
 
 	public ResponseEntity<?> create(OrderRequest request);
 	

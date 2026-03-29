@@ -51,6 +51,14 @@ public class OrderController {
 		return service.getById(id);
 	}
 	
+	@GetMapping("{id}/files")
+	@Operation(summary = "Obtener archvios de una orden", description = "Buscar archivos de una orden por id")
+	public ResponseEntity<?> getFilesorderById(
+			@Parameter(description = "UUID de la orden de los archivos", example = "3faef6cb-a6a1-408c-9a4e-9c2cca69d77e")
+			@PathVariable UUID id){
+		return service.getFilesorderById(id);
+	}
+	
 	@PostMapping
 	@Operation(summary = "Crear orden", description = "Crear nueva orden")
 	public ResponseEntity<?> create(
@@ -67,7 +75,7 @@ public class OrderController {
 			@Parameter(description = "UUID del conductor a asignar", example = "3faef6cb-a6a1-408c-9a4e-9c2cca69d77e")
 			@PathVariable UUID driverId, 
 			@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "PDF e IMAGEN en base64", required = true)
-			@Valid AssignDriverRequest request){
+			@Valid @RequestBody AssignDriverRequest request){
 		return service.assignDriver(id, driverId, request);
 	}
 	

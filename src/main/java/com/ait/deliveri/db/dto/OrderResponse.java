@@ -3,9 +3,6 @@ package com.ait.deliveri.db.dto;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import com.ait.deliveri.db.entity.Driver;
-import com.ait.deliveri.db.entity.OrderStatus;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,9 +18,9 @@ public class OrderResponse {
 
 	private UUID id;
 
-	private OrderStatus status;
+	private String status;
 
-	private Driver driver;
+	private DriverResponse driver;
 
 	private String origin;
 
